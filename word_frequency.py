@@ -3,23 +3,29 @@ STOP_WORDS = [
     'he', 'i', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the', 'to',
     'were', 'will', 'with'
 ]
-
+import string
 
 class FileReader:
     def __init__(self, filename):
-        pass
+        self.filename = filename.open()
+        
+
 
     def read_contents(self):
         """
         This should read all the contents of the file
         and return them as one string.
         """
-        raise NotImplementedError("FileReader.read_contents")
+        contents = self.filename.read()
+        
+        # print(contents)
+        return contents
+        
 
 
 class WordList:
     def __init__(self, text):
-        pass
+        self.text = text
 
     def extract_words(self):
         """
@@ -27,14 +33,25 @@ class WordList:
         is responsible for lowercasing all words and stripping
         them of punctuation.
         """
-        raise NotImplementedError("WordList.extract_words")
+        words = self.text.lower().split()
+        good_to_go = [word.strip(string.punctuation) for word in words]
+        self.good_to_go = good_to_go
+        
+        
+        
 
     def remove_stop_words(self):
         """
         Removes all stop words from our word list. Expected to
         be run after extract_words.
         """
-        raise NotImplementedError("WordList.remove_stop_words")
+        go_words = []
+        for word in self.good_to_go:
+           if not word in STOP_WORDS:
+               go_words.append(word)
+        self.go_words = go_words
+        # print(self.go_words)
+
 
     def get_freqs(self):
         """
@@ -43,12 +60,22 @@ class WordList:
         extract_words and remove_stop_words. The data structure
         could be a dictionary or another type of object.
         """
-        raise NotImplementedError("WordList.get_freqs")
+        word_freq_list = dict()
+        for word in self.go_words:
+            if word in word_freq_list:
+                word_freq_list[word] += 1
+            else:
+                word_freq_list[word] = 1
+        
+        self.sorted_freq_list = sorted(word_freq_list.items(), key = lambda seq: seq[1], reverse=True)
+        # print(self.sorted_freq_list)
+        return self.sorted_freq_list
+        
 
 
 class FreqPrinter:
     def __init__(self, freqs):
-        pass
+        self.freqs = freqs
 
     def print_freqs(self):
         """
@@ -67,7 +94,8 @@ class FreqPrinter:
        rights | 6    ******
         right | 6    ******
         """
-        raise NotImplementedError("FreqPrinter.print_freqs")
+        for key, value in self.freqs[:10]:
+            print(key.rjust(20), " | ", value, value * ("*"))
 
 
 if __name__ == "__main__":
